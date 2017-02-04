@@ -2,7 +2,7 @@ import time
 import random
 import RPi.GPIO as GPIO
 
-# Adressierung der PINs definieren
+# Set GPIO Layout
 GPIO.setmode(GPIO.BOARD)
 
 # Pin11 als Output definieren
