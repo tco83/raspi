@@ -1,3 +1,0 @@
-Just a sample Textfile to create a diff for git
-I'm a ham and people call me sam.
-Addition add to check out diff
