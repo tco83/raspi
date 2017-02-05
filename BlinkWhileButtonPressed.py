@@ -1,10 +1,10 @@
 import RPi.GPIO as GPIO
 import time
 
-# Adressierungs-Schema der PINs festlegen
+# Define mode of pin adressing
 GPIO.setmode(GPIO.BOARD)
 
-# Pin11,13,15 als Output definieren (LEDs)
+# Define Pins 11,13,15 as Outputs (LED)
 GPIO.setup(11, GPIO.OUT)
 GPIO.setup(13, GPIO.OUT)
 GPIO.setup(15, GPIO.OUT)
@@ -13,7 +13,7 @@ GPIO.setup(15, GPIO.OUT)
 # der Druck des Buttons zieht dann runter (False)
 GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# Farbzuordnung LEDs (bessere Lesbarkeit Code)
+# Assign Color Codes (readability)
 red=11
 yellow=13
 green=15
