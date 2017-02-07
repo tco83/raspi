@@ -28,7 +28,7 @@ oled = terminal(device, font, animate=False)
 
 try:    
     oled.println("################")
-    oled.println("# DISPLAY INIT #")
+    oled.println("# HALLO SCHATZ #")
     oled.println("################")
     time.sleep(2)
     oled.clear()
