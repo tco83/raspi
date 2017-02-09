@@ -7,50 +7,61 @@ import dht11
 
 from demo_opts import device
 from luma.core.virtual import terminal
+from luma.core.render import canvas
 from PIL import ImageFont
 
 #### CONFIG ZONE ####
-dhtpin = 22 # GPIO PIN the DHT11 data pin is connected to
 samplingRate = 2 # seconds, how often does data get pulled from DHT11
-fontSize = 12
+fontName = "upheavtt.ttf"
+fontSize = 40
 
-# initialize GPIO
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
-GPIO.cleanup()
+def init():
+    # initialize GPIO
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.cleanup()
 
-# read data using pin 14
-instance = dht11.DHT11(pin=dhtpin)
+def DHT(pin=22):
+    # read data using pin 14
+    instance = dht11.DHT11(pin=pin)
+    return instance
 
-# initializing OLED display
-font = ImageFont.truetype("miscfs_.ttf", fontSize)
-oled = terminal(device, font, animate=False)
+def displayData(device, font, temp, humid):
+    with canvas(device) as draw:
+        draw.text((0,0), str(temp)+"C", font=font, fill="white")
+        draw.text((0,32), str(humid)+"%", font=font, fill="white")
 
-try:    
-    oled.println("################")
-    oled.println("# HALLO SCHATZ #")
-    oled.println("################")
-    time.sleep(2)
-    oled.clear()
-                 
+def displayClear(device):
+    with canvas(device) as draw:
+        draw.rectangle((0,0,device.width, device.height), fill="black")
+
+def main(outputHandler):
+    init()
+    dhtInstance = DHT()
+    fontHandler = ImageFont.truetype(fontName, fontSize)
+
     while True:
-        result = instance.read()
-        if result.is_valid():
-            temp="Temperature: " + str(result.temperature) + "C"
-            humid="Humidity: " + str(result.humidity) + "%"
+        res = dhtInstance.read()
+        if res.is_valid():
+            temp = res.temperature
+            humid = res.humidity
+            outputHandler.write(time.strftime("%d.%m.%Y %H:%M:%S") +";"+ str(temp) +";"+ str(humid) + "\n")
+            outputHandler.flush()
+            print(time.strftime("%d.%m.%Y %H:%M:%S") +";"+ str(temp) +";"+ str(humid))
+            displayData(device, fontHandler, temp, humid)
             
-            #oled.println(str(datetime.datetime.now()))
-            oled.clear()
-            oled.println(temp)
-            oled.println(humid)
-            print("T: %d °C | H: %d %%" % (result.temperature, result.humidity))
-            #print("Last valid input: " + str(datetime.datetime.now()))
-            #print("Temperature: %d C" % result.temperature)
-            #print("Humidity: %d %%" % result.humidity)
-
         time.sleep(samplingRate)
+        
+if __name__ == "__main__":
+    try:
+        outputFileName = "out_"+str(round(time.time()))+".csv"
+        outputHandler = open(outputFileName, mode="a")
+        main(outputHandler)
+    except KeyboardInterrupt:
+        displayClear(device)
+        outputHandler.close()
+        print("Ended by user (Strg+C)!")
+        print("Display cleared ...")
+        print("Filehandlers closed ...")
+        pass
 
-except KeyboardInterrupt:
-    oled.clear()
-    print("Ended by user!")
-    pass
