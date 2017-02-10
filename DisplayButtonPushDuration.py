@@ -2,18 +2,18 @@ import RPi.GPIO as GPIO
 import time
 
 # Adressierungs-Schema der PINs festlegen
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 
 # PIN 12 als Input-PIN mit Default True (PUD_UP) definieren.
 # der Druck des Buttons zieht dann runter (False)
-GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Timer Variablen initialisieren
 starttime = 0
 endtime = 0
 
 while True:
-    input_state = GPIO.input(12)
+    input_state = GPIO.input(18)
 
     if input_state == False:
         if starttime == 0:

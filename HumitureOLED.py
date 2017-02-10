@@ -21,6 +21,18 @@ def init():
     GPIO.setmode(GPIO.BCM)
     GPIO.cleanup()
 
+def initButton(pin=18):
+    # initialize the Button to on/off display
+    GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+def buttonPressed(pin=18):
+    input_state = GPIO.input(pin)
+    if input_state == False:
+        print("GEDRÜCKT!")
+        return True
+    elif input_state == True:
+        return False
+
 def DHT(pin=22):
     # read data using pin 14
     instance = dht11.DHT11(pin=pin)
@@ -37,10 +49,21 @@ def displayClear(device):
 
 def main(outputHandler):
     init()
+    initButton()
+
+    oledActive = False
+    
     dhtInstance = DHT()
     fontHandler = ImageFont.truetype(fontName, fontSize)
 
     while True:
+        # Check if button is pressed and oled state needs change
+        if buttonPressed() == True and oledActive == False:
+            oledActive = True
+        elif buttonPressed() == True and oledActive == True:
+            oledActive = False
+            displayClear(device)
+            
         res = dhtInstance.read()
         if res.is_valid():
             temp = res.temperature
@@ -48,7 +71,8 @@ def main(outputHandler):
             outputHandler.write(time.strftime("%d.%m.%Y %H:%M:%S") +";"+ str(temp) +";"+ str(humid) + "\n")
             outputHandler.flush()
             print(time.strftime("%d.%m.%Y %H:%M:%S") +";"+ str(temp) +";"+ str(humid))
-            displayData(device, fontHandler, temp, humid)
+            if oledActive == True:
+                displayData(device, fontHandler, temp, humid)
             
         time.sleep(samplingRate)
         
