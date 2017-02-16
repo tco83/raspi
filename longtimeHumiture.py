@@ -129,7 +129,7 @@ if __name__ == "__main__":
     p1.start()
 
     # Start process reading data from DHT11
-    p2 = multiprocessing.Process(target=readDHT, args=(dataQueue, 22, 5, ))
+    p2 = multiprocessing.Process(target=readDHT, args=(dataQueue, 22, 30, ))
     p2.start()
 
     # Initialize everything for the OLED display
